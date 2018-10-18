@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         ((Button)findViewById(R.id.btnC)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tv.setText("");
+
             }
         });
 
