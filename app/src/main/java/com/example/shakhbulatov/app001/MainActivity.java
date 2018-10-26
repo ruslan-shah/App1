@@ -13,7 +13,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView tv;
 
-
     Add add = new Add();
     Sub sub = new Sub();
 
@@ -21,24 +20,31 @@ public class MainActivity extends AppCompatActivity {
     String operand2 = "";
     Operation oper;
 
-    class Operation {
-        void Exec () {
-            tv.setText("base");
-        };
+    abstract class Operation {
+        abstract String GetTxt();
+        abstract void Exec ();
     };
     class Add extends Operation {
         @Override
         void Exec () {
-            super.Exec();
-//            tv.setText("Add");
+            operand1 = new Double(Double.parseDouble(operand1) + Double.parseDouble(operand2)).toString();
+            operand2 = "";
+        }
+        @Override
+        String GetTxt() {
+            return "+";
         }
     };
 
     class Sub extends Operation {
         @Override
         void Exec () {
-            super.Exec();
-//            tv.setText("Sub");
+            operand1 = new Double(Double.parseDouble(operand1) - Double.parseDouble(operand2)).toString();
+            operand2 = "";
+        }
+        @Override
+        String GetTxt() {
+            return "-";
         }
     };
 
@@ -51,11 +57,48 @@ public class MainActivity extends AppCompatActivity {
 
         ((Button)findViewById(R.id.btnC)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                tv.setText("");
-
+                operand1 = "";
+                operand2 = "";
+                oper = null;
+                Display();
             }
         });
 
+        ((Button)findViewById(R.id.btnAdd)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ExecOper(add);
+            }
+        });
+        ((Button)findViewById(R.id.btnSub)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ExecOper(sub);
+            }
+        });
+        ((Button)findViewById(R.id.btnCalc)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ExecOper(null);
+            }
+        });
+
+
+    }
+    void ExecOper(Operation op)
+    {
+        if (oper != null && operand2 != "")
+            oper.Exec();
+        if (operand1 == "")
+          oper = null;
+        else
+          oper = op;
+        Display();
+    }
+
+    void Display()
+    {
+        String s = operand1;
+        if (oper != null)
+            s = s + oper.GetTxt() + operand2;
+        tv.setText(s);
     }
 
     public void onDigitButtonClick(View view)
@@ -64,22 +107,7 @@ public class MainActivity extends AppCompatActivity {
             operand1 = operand1 + ((Button) view).getText().toString();
         else
             operand2 = operand2 + ((Button) view).getText().toString();
-        String s = operand1;
-//        if (oper != null)
-  //          s =
-
-//        ((Button) view).getText().toString()
-  //      tv.setText(operand1.toString());
-//        if (((Button) view).getText().toString().equals("1")) {
-//            oper = add;
-//        }
-//        if (((Button) view).getText().toString().equals("2")) {
-//            oper = sub;
-//        }
-//        if (((Button) view).getText().toString().equals("3")) {
-//            if (oper != null)
-//              oper.Exec();
-//        }
+        Display();
     }
 }
 
