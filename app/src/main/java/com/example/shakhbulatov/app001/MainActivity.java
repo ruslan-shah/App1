@@ -8,13 +8,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
 
 public class MainActivity extends AppCompatActivity {
 
     TextView tv;
 
+    String pattern = "#.#########";
+    String err = "";
+
     Add add = new Add();
     Sub sub = new Sub();
+    Divide divide = new Divide();
+    Mult mult = new Mult();
 
     String operand1 = "";
     String operand2 = "";
@@ -24,10 +31,11 @@ public class MainActivity extends AppCompatActivity {
         abstract String GetTxt();
         abstract void Exec ();
     };
+
     class Add extends Operation {
         @Override
         void Exec () {
-            operand1 = new Double(Double.parseDouble(operand1) + Double.parseDouble(operand2)).toString();
+            operand1 = new DecimalFormat(pattern).format(Double.parseDouble(operand1) + Double.parseDouble(operand2));
             operand2 = "";
         }
         @Override
@@ -39,12 +47,42 @@ public class MainActivity extends AppCompatActivity {
     class Sub extends Operation {
         @Override
         void Exec () {
-            operand1 = new Double(Double.parseDouble(operand1) - Double.parseDouble(operand2)).toString();
+            operand1 = new DecimalFormat(pattern).format(Double.parseDouble(operand1) - Double.parseDouble(operand2));
             operand2 = "";
         }
         @Override
         String GetTxt() {
             return "-";
+        }
+    };
+
+    class Divide extends Operation {
+        @Override
+        void Exec () {
+            if (Double.parseDouble(operand2) != 0) {
+                operand1 = new DecimalFormat(pattern).format(Double.parseDouble(operand1) / Double.parseDouble(operand2));
+            }
+            else {
+                operand1 = "";
+                err = "Error: Divide by zero!";
+            };
+            operand2 = "";
+        }
+        @Override
+        String GetTxt() {
+            return "/";
+        }
+    };
+
+    class Mult extends Operation {
+        @Override
+        void Exec () {
+            operand1 = new DecimalFormat(pattern).format(Double.parseDouble(operand1) * Double.parseDouble(operand2));
+            operand2 = "";
+        }
+        @Override
+        String GetTxt() {
+            return "*";
         }
     };
 
@@ -74,6 +112,16 @@ public class MainActivity extends AppCompatActivity {
                 ExecOper(sub);
             }
         });
+        ((Button)findViewById(R.id.btnDiv)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ExecOper(divide);
+            }
+        });
+        ((Button)findViewById(R.id.btnMult)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ExecOper(mult);
+            }
+        });
         ((Button)findViewById(R.id.btnCalc)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ExecOper(null);
@@ -95,9 +143,16 @@ public class MainActivity extends AppCompatActivity {
 
     void Display()
     {
-        String s = operand1;
-        if (oper != null)
-            s = s + oper.GetTxt() + operand2;
+        String s;
+        if (err != "") {
+            s = err;
+            err = "";
+        }
+        else {
+            s = operand1;
+            if (oper != null)
+                s = s + oper.GetTxt() + operand2;
+        }
         tv.setText(s);
     }
 
